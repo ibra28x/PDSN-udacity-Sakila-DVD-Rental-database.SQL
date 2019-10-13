@@ -1,0 +1,14 @@
+SELECT
+  film.title film_title,
+  category.name category_name,
+  SUM(rental.rental_id)
+FROM film
+JOIN film_category
+  ON film.film_id = film_category.film_id
+JOIN category
+  ON category.category_id = film_category.category_id
+JOIN rental
+  ON rental.rental_id = film.film_id
+GROUP BY 1,
+         2
+ORDER BY 3 DESC

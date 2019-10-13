@@ -1,0 +1,15 @@
+SELECT full_name ,the_date , total_payment ,COUNTs
+from
+(SELECT
+  concat(customer.first_name, ' ', customer.last_name) full_name,
+  concat(date_part('year', payment.payment_date), '-', date_part('month', payment.payment_date)) the_date,
+  SUM(payment.amount) total_payment,
+  COUNT(payment.amount) COUNTs
+FROM customer
+JOIN payment
+  ON payment.customer_id = customer.customer_id
+GROUP BY 1,
+         2
+ORDER BY 3 DESC
+LIMIT 10)T1
+order by 1,2

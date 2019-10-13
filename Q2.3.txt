@@ -1,0 +1,30 @@
+SELECT
+  full_name,
+  the_date,
+  total_payment,
+   total_payment - LAG(total_payment) OVER (ORDER BY 1,2) difference 
+FROM (SELECT
+  concat(customer.first_name, ' ', customer.last_name) full_name,
+  DATE_TRUNC('month', payment.payment_date) the_date,
+  SUM(payment.amount) total_payment
+FROM customer
+JOIN payment
+  ON payment.customer_id = customer.customer_id
+WHERE concat(customer.first_name, ' ', customer.last_name) IN (SELECT full_name
+from
+(SELECT
+  concat(customer.first_name, ' ', customer.last_name) full_name,
+  concat(date_part('year', payment.payment_date), '-', date_part('month', payment.payment_date)) the_date,
+  SUM(payment.amount) total_payment,
+  COUNT(payment.amount) COUNTs
+FROM customer
+JOIN payment
+  ON payment.customer_id = customer.customer_id
+GROUP BY 1,
+         2
+ORDER BY 3 DESC
+LIMIT 10)T1)
+GROUP BY 1,
+         2
+ORDER BY 1 DESC) T1
+ORDER BY 1,2
